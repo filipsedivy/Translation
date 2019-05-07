@@ -5,7 +5,8 @@
  *
  * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
  *
- * For the full copyright and license information, please view the file license.txt that was distributed with this source code.
+ * For the full copyright and license information, please view the file license.txt that was distributed with this
+ * source code.
  */
 
 namespace Kdyby\Translation\LocaleResolver;
@@ -28,66 +29,74 @@ use Nette\Http\Session;
 class SessionResolver implements \Kdyby\Translation\IUserLocaleResolver
 {
 
-	use \Kdyby\StrictObjects\Scream;
+    use \Kdyby\StrictObjects\Scream;
 
-	/**
-	 * @var \Nette\Http\SessionSection|\stdClass
-	 */
-	private $localeSession;
+    /**
+     * @var \Nette\Http\SessionSection|\stdClass
+     */
+    private $localeSession;
 
-	/**
-	 * @var \Nette\Http\IResponse
-	 */
-	private $httpResponse;
+    /**
+     * @var \Nette\Http\IResponse
+     */
+    private $httpResponse;
 
-	/**
-	 * @var \Nette\Http\Session
-	 */
-	private $session;
+    /**
+     * @var \Nette\Http\Session
+     */
+    private $session;
 
-	public function __construct(Session $session, IResponse $httpResponse)
-	{
-		$this->localeSession = $session->getSection(get_class($this));
-		$this->httpResponse = $httpResponse;
-		$this->session = $session;
-	}
 
-	/**
-	 * @param string $locale
-	 */
-	public function setLocale($locale = NULL)
-	{
-		$this->localeSession->locale = $locale;
-	}
+    public function __construct(Session $session, IResponse $httpResponse)
+    {
+        $this->localeSession = $session->getSection(get_class($this));
+        $this->httpResponse = $httpResponse;
+        $this->session = $session;
+    }
 
-	/**
-	 * @param \Kdyby\Translation\Translator $translator
-	 * @return string|NULL
-	 */
-	public function resolve(Translator $translator)
-	{
-		if (!$this->session->isStarted() && $this->httpResponse->isSent()) {
-			trigger_error(
-				'The advice of session locale resolver is required but the session has not been started and headers had been already sent. ' .
-				'Either start your sessions earlier or disabled the SessionResolver.',
-				E_USER_WARNING
-			);
-			return NULL;
-		}
 
-		if (empty($this->localeSession->locale)) {
-			return NULL;
-		}
+    /**
+     * @param string $locale
+     */
+    public function setLocale($locale = null)
+    {
+        $this->localeSession->locale = $locale;
+    }
 
-		$short = array_map(function ($locale) {
-			return substr($locale, 0, 2);
-		}, $translator->getAvailableLocales());
 
-		if (!in_array(substr($this->localeSession->locale, 0, 2), $short, TRUE)) {
-			return NULL;
-		}
+    /**
+     * @param \Kdyby\Translation\Translator $translator
+     *
+     * @return string|NULL
+     */
+    public function resolve(Translator $translator)
+    {
+        if (!$this->session->isStarted() && $this->httpResponse->isSent())
+        {
+            trigger_error(
+                'The advice of session locale resolver is required but the session has not been started and headers had been already sent. ' .
+                'Either start your sessions earlier or disabled the SessionResolver.',
+                E_USER_WARNING
+            );
 
-		return $this->localeSession->locale;
-	}
+            return null;
+        }
+
+        if (empty($this->localeSession->locale))
+        {
+            return null;
+        }
+
+        $short = array_map(function ($locale) {
+            return substr($locale, 0, 2);
+        }, $translator->getAvailableLocales());
+
+        if (!in_array(substr($this->localeSession->locale, 0, 2), $short, true))
+        {
+            return null;
+        }
+
+        return $this->localeSession->locale;
+    }
 
 }
